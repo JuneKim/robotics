@@ -1,0 +1,29 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+PROJECT(navi-service C CXX)
+
+SET(SRCS
+	src/NaviCore.cpp
+)
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
+IF(FEATURE)
+	ADD_DEFINITIONS("-DFEATURE")
+ENDIF(FEATURE)
+
+ADD_DEFINITIONS("-DDEBUG")
+INCLUDE(FindPkgConfig)
+pkg_check_modules(pkgs_navi_service)
+	REQUIRED
+	glib-2.0
+)
+
+FOREACH(flag ${pkgs_navi_service_FLAGS})
+	SET(EXTRA_CXXFLAGS "${EXTRA_CXXFLAGS} ${flag}")
+ENDFOREACH(flag)
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_CXXFLAGS} -g -fvisibility=hidden -Wl,--no-undefined -fPIC -Wall -std=c++0x")
+
+ADD_EXECUTABLE(${PROJECT} ${SRCS})
+#TARGET_LINK_LIBRARIES(${PROJECT} test)
+
+INSTALL(TARGET ${PROJECT} DESTINATION bin)
